@@ -1,0 +1,35 @@
+M:I
+N:ITOutside
+M:P1
+N:My sendCursor is -1, I can increment my sendCursor
+
+M:I
+N:ITOutside
+M:P1
+N:R...
+M:P2
+N:The last one was a P and different to this P, I can increment my sendCursor
+
+M:I
+N:ITOutside
+M:P1
+N:R...
+M:P1
+N:The last was a P but the same as this P, don't increment my sendCursor
+
+M:I
+N:ITOutside
+M:P1
+N:R...
+M:I
+N:ITOutside
+M:P2
+N:The last one wasn't a P, don't increment my sendCursor
+
+M:I
+N:IDBedroom
+M:R1...
+N:P
+M:R2...
+N:P
+M:No more readings, reset sendCursor and move on...

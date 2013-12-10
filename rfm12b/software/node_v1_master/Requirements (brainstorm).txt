@@ -1,0 +1,52 @@
+d byte PollStatus (default = 0)
+d 0: Ready to poll
+d 1: Polling (attempt 1)
+d 2: Polling (attempt 2)
+d 3: Polling (attempt 3)
+d --4: Waiting for reply (attempt 1)
+d --5: Waiting for reply (attempt 2)
+d --6: Waiting for reply (attempt 3)
+d 4: Waiting for next round
+ 
+
+d unsigned long LastPollTime (default = 0)
+d millis() of last poll send
+ 
+
+d unsigned long FirstPollTime (default = 0)
+d millis() of first poll send for current round
+
+
+d byte PollID (default = 1)
+d 1 to 31: ID of node being polled
+ 
+
+d char* RecvData[31] (default = empty)
+d Bytes last received from each node, plus recv time.
+ 
+
+d char sendString[66] (default = empty)
+d String being sent via RF. By saving to a variable, retry functions can be invoked easily
+ 
+
+d loop:
+d - SELECT CASE PollStatus
+d   - CASE 0:
+d     - Send request to PollID. LastPollTime = millis(), PollStatus = 1. If PollID = 1 then FirstPollTime = LastPollTime
+d   - CASE 1 to 3:
+d     - If millis() - LastPollTime > 20 then:
+d       - If PollStatus = 3, reset PollStatus to 0 and increment PollID
+d       - Otherwise:
+d         - Increment PollStatus and transmit sendString again.
+d   - CASE 4:
+d       - If millis() - FirstPollTime > 10000 then PollID = 1 and PollStatus = 0
+ 
+
+Recv IRQ:
+- log [millis() - LastPollTime] to Serial
+- If bytes contain data then reset PollStatus to 0 and save to RecvData[PollID]
+- If bytes contain request then reply to request w/ ACK & 3 retries
+- If bytes represent EOT then reset PollStatus to 0 and increment PollID
+
+d When incrementing PollID:
+d - If PollID = 31 then PollStatus = 4, otherwise increment PollID
